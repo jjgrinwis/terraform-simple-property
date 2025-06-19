@@ -76,19 +76,6 @@ security_policy = "medium"
 product_name = "dsa"
 ```
 
-### Variable Details
-
-| Variable          | Description               | Default                   | Valid Values                                  |
-| ----------------- | ------------------------- | ------------------------- | --------------------------------------------- | --- | --- | --- | -------------------- |
-| `group_name`      | Akamai group name         | `"Akamai Demo-M-1YX7F61"` | Any valid group name                          |
-| `email`           | Notification email        | `"test@test.nl"`          | Valid email address                           |
-| `domain_suffix`   | Edge hostname suffix      | `"edgekey.net"`           | `edgekey.net`, `edgesuite.net`                |
-| `cpcode`          | CP Code name              | `"jgrinwis"`              | Any valid CP Code name                        |
-| `hostnames`       | Comma-separated hostnames | Required                  | Format: `hostname.subdomain.(p15              | a15 | r15 | s15 | t15).great-demo.com` |
-| `security_policy` | Security level            | Required                  | `low`, `medium`, `high`                       |
-| `product_name`    | Akamai product            | `"dsa"`                   | `ion`, `dsa`, `dd`                            |
-| `ip_behavior`     | IP version behavior       | `"IPV6_COMPLIANCE"`       | `IPV4`, `IPV6_PERFORMANCE`, `IPV6_COMPLIANCE` |
-
 ## Usage
 
 1. **Initialize Terraform**:
