@@ -1,0 +1,909 @@
+${jsonencode(
+{
+  "rules": {
+    "name": "default",
+    "children": [
+      {
+        "name": "Origins",
+        "children": [ for k in hostnames :
+          {
+            "name": "${k}",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "origin",
+                "options": {
+                  "cacheKeyHostname": "REQUEST_HOST_HEADER",
+                  "compress": true,
+                  "enableTrueClientIp": true,
+                  "forwardHostHeader": "REQUEST_HOST_HEADER",
+                  "hostname": "${k}.cname.mendix.net",
+                  "httpPort": 80,
+                  "httpsPort": 443,
+                  "ipVersion": "IPV4",
+                  "minTlsVersion": "DYNAMIC",
+                  "originCertificate": "",
+                  "originCertsToHonor": "COMBO",
+                  "originSni": true,
+                  "originType": "CUSTOMER",
+                  "ports": "",
+                  "tlsVersionTitle": "",
+                  "trueClientIpClientSetting": false,
+                  "trueClientIpHeader": "True-Client-IP",
+                  "verificationMode": "PLATFORM_SETTINGS",
+                  "customCertificates": []
+                }
+              }
+            ],
+            "criteria": [
+              {
+                "name": "hostname",
+                "options": {
+                  "matchOperator": "IS_ONE_OF",
+                  "values": [
+                    "${k}"
+                  ]
+                }
+              }
+            ],
+            "criteriaMustSatisfy": "all"
+          }],
+        "behaviors": [],
+        "criteria": [],
+        "criteriaMustSatisfy": "all"
+      },
+      {
+        "name": "Augment insights",
+        "children": [
+          {
+            "name": "Traffic reporting",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "cpCode",
+                "options": {
+                  "value": {
+                    "cpCodeLimits": {
+                    },
+                    "id": cpcode,
+                    "products": [
+                      "Site_Accel"
+                    ]
+                  }
+                }
+              }
+            ],
+            "criteria": [],
+            "criteriaMustSatisfy": "all",
+            "comments": "Identify your main traffic segments so you can zoom in your traffic statistics like hits, bandwidth, offload, response codes, and errors."
+          },
+          {
+            "name": "Log delivery",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "report",
+                "options": {
+                  "logAcceptLanguage": true,
+                  "logCookies": "OFF",
+                  "logCustomLogField": false,
+                  "logEdgeIP": false,
+                  "logHost": true,
+                  "logReferer": true,
+                  "logUserAgent": true,
+                  "logXForwardedFor": false
+                }
+              }
+            ],
+            "criteria": [],
+            "criteriaMustSatisfy": "all",
+            "comments": "Specify the level of detail you want to be logged in your Log Delivery Service reports. Log User-Agent Header to obtain detailed information in the Traffic by Browser and OS report."
+          }
+        ],
+        "behaviors": [],
+        "criteria": [],
+        "criteriaMustSatisfy": "all",
+        "comments": "Control the settings related to monitoring and reporting. This gives you additional visibility into your traffic and audiences."
+      },
+      {
+        "name": "Accelerate Delivery",
+        "children": [
+          {
+            "name": "Origin connectivity",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "dnsAsyncRefresh",
+                "options": {
+                  "enabled": true,
+                  "timeout": "1h"
+                }
+              },
+              {
+                "name": "timeout",
+                "options": {
+                  "value": "5s"
+                }
+              },
+              {
+                "name": "readTimeout",
+                "options": {
+                  "firstByteTimeout": "120s",
+                  "value": "120s"
+                }
+              }
+            ],
+            "criteria": [],
+            "criteriaMustSatisfy": "all",
+            "comments": "Optimize the connection between edge and origin."
+          },
+          {
+            "name": "Protocol Optimizations",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "http2",
+                "options": {
+                  "enabled": ""
+                }
+              },
+              {
+                "name": "allowTransferEncoding",
+                "options": {
+                  "enabled": true
+                }
+              },
+              {
+                "name": "sureRoute",
+                "options": {
+                  "enabled": false,
+                  "srDownloadLinkTitle": ""
+                }
+              }
+            ],
+            "criteria": [],
+            "criteriaMustSatisfy": "all",
+            "comments": "Serve your website using modern and fast protocols."
+          },
+          {
+            "name": "Prefetching",
+            "children": [
+              {
+                "name": "Prefetching objects",
+                "children": [
+                  {
+                    "name": "Bots",
+                    "children": [],
+                    "behaviors": [
+                      {
+                        "name": "prefetch",
+                        "options": {
+                          "enabled": false
+                        }
+                      }
+                    ],
+                    "criteria": [
+                      {
+                        "name": "userAgent",
+                        "options": {
+                          "matchCaseSensitive": false,
+                          "matchOperator": "IS_ONE_OF",
+                          "matchWildcard": true,
+                          "values": [
+                            "*bot*",
+                            "*crawl*",
+                            "*spider*"
+                          ]
+                        }
+                      }
+                    ],
+                    "criteriaMustSatisfy": "all",
+                    "comments": "Disable prefetching for specific clients identifying themselves as bots and crawlers. This avoids requesting unnecessary resources from the origin."
+                  }
+                ],
+                "behaviors": [
+                  {
+                    "name": "prefetch",
+                    "options": {
+                      "enabled": true
+                    }
+                  }
+                ],
+                "criteria": [],
+                "criteriaMustSatisfy": "all",
+                "comments": "Define for which HTML pages prefetching should be enabled."
+              },
+              {
+                "name": "Prefetchable objects",
+                "children": [],
+                "behaviors": [
+                  {
+                    "name": "prefetchable",
+                    "options": {
+                      "enabled": true
+                    }
+                  }
+                ],
+                "criteria": [
+                  {
+                    "name": "fileExtension",
+                    "options": {
+                      "matchCaseSensitive": false,
+                      "matchOperator": "IS_ONE_OF",
+                      "values": [
+                        "css",
+                        "js",
+                        "jpg",
+                        "jpeg",
+                        "jp2",
+                        "png",
+                        "gif",
+                        "svg",
+                        "svgz",
+                        "webp",
+                        "eot",
+                        "woff",
+                        "woff2",
+                        "otf",
+                        "ttf"
+                      ]
+                    }
+                  }
+                ],
+                "criteriaMustSatisfy": "all",
+                "comments": "Define which resources should be prefetched."
+              }
+            ],
+            "behaviors": [],
+            "criteria": [],
+            "criteriaMustSatisfy": "all"
+          }
+        ],
+        "behaviors": [],
+        "criteria": [],
+        "criteriaMustSatisfy": "all",
+        "comments": "Control the settings related to improving the performance of delivering objects to your users."
+      },
+      {
+        "name": "Offload origin",
+        "children": [
+          {
+            "name": "CSS and JavaScript",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "caching",
+                "options": {
+                  "behavior": "CACHE_CONTROL_AND_EXPIRES",
+                  "cacheControlDirectives": "",
+                  "defaultTtl": "0s",
+                  "enhancedRfcSupport": false,
+                  "honorMustRevalidate": false,
+                  "honorPrivate": false,
+                  "mustRevalidate": false
+                }
+              }
+            ],
+            "criteria": [
+              {
+                "name": "fileExtension",
+                "options": {
+                  "matchCaseSensitive": false,
+                  "matchOperator": "IS_ONE_OF",
+                  "values": [
+                    "css",
+                    "js"
+                  ]
+                }
+              }
+            ],
+            "criteriaMustSatisfy": "any",
+            "comments": "Override the default caching behavior for CSS and JavaScript."
+          },
+          {
+            "name": "Fonts",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "caching",
+                "options": {
+                  "behavior": "CACHE_CONTROL_AND_EXPIRES",
+                  "cacheControlDirectives": "",
+                  "defaultTtl": "0s",
+                  "enhancedRfcSupport": false,
+                  "honorMustRevalidate": false,
+                  "honorPrivate": false,
+                  "mustRevalidate": false
+                }
+              }
+            ],
+            "criteria": [
+              {
+                "name": "fileExtension",
+                "options": {
+                  "matchCaseSensitive": false,
+                  "matchOperator": "IS_ONE_OF",
+                  "values": [
+                    "eot",
+                    "woff",
+                    "woff2",
+                    "otf",
+                    "ttf"
+                  ]
+                }
+              }
+            ],
+            "criteriaMustSatisfy": "any",
+            "comments": "Override the default caching behavior for fonts."
+          },
+          {
+            "name": "Images",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "caching",
+                "options": {
+                  "behavior": "CACHE_CONTROL_AND_EXPIRES",
+                  "cacheControlDirectives": "",
+                  "defaultTtl": "0s",
+                  "enhancedRfcSupport": false,
+                  "honorMustRevalidate": false,
+                  "honorPrivate": false,
+                  "mustRevalidate": false
+                }
+              }
+            ],
+            "criteria": [
+              {
+                "name": "fileExtension",
+                "options": {
+                  "matchCaseSensitive": false,
+                  "matchOperator": "IS_ONE_OF",
+                  "values": [
+                    "jpg",
+                    "jpeg",
+                    "png",
+                    "gif",
+                    "webp",
+                    "jp2",
+                    "ico",
+                    "svg",
+                    "svgz"
+                  ]
+                }
+              }
+            ],
+            "criteriaMustSatisfy": "any",
+            "comments": "Override the default caching behavior for images."
+          },
+          {
+            "name": "Files",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "caching",
+                "options": {
+                  "behavior": "CACHE_CONTROL_AND_EXPIRES",
+                  "cacheControlDirectives": "",
+                  "defaultTtl": "0s",
+                  "enhancedRfcSupport": false,
+                  "honorMustRevalidate": false,
+                  "honorPrivate": false,
+                  "mustRevalidate": false
+                }
+              }
+            ],
+            "criteria": [
+              {
+                "name": "fileExtension",
+                "options": {
+                  "matchCaseSensitive": false,
+                  "matchOperator": "IS_ONE_OF",
+                  "values": [
+                    "pdf",
+                    "doc",
+                    "docx",
+                    "odt"
+                  ]
+                }
+              }
+            ],
+            "criteriaMustSatisfy": "any",
+            "comments": "Override the default caching behavior for files. Files containing Personal Identified Information (PII) should require Edge authentication or not be cached at all."
+          },
+          {
+            "name": "Other static objects",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "caching",
+                "options": {
+                  "behavior": "CACHE_CONTROL_AND_EXPIRES",
+                  "cacheControlDirectives": "",
+                  "defaultTtl": "0s",
+                  "enhancedRfcSupport": false,
+                  "honorMustRevalidate": false,
+                  "honorPrivate": false,
+                  "mustRevalidate": false
+                }
+              }
+            ],
+            "criteria": [
+              {
+                "name": "fileExtension",
+                "options": {
+                  "matchCaseSensitive": false,
+                  "matchOperator": "IS_ONE_OF",
+                  "values": [
+                    "aif",
+                    "aiff",
+                    "au",
+                    "avi",
+                    "bin",
+                    "bmp",
+                    "cab",
+                    "carb",
+                    "cct",
+                    "cdf",
+                    "class",
+                    "dcr",
+                    "dtd",
+                    "exe",
+                    "flv",
+                    "gcf",
+                    "gff",
+                    "grv",
+                    "hdml",
+                    "hqx",
+                    "ini",
+                    "mov",
+                    "mp3",
+                    "nc",
+                    "pct",
+                    "ppc",
+                    "pws",
+                    "swa",
+                    "swf",
+                    "txt",
+                    "vbs",
+                    "w32",
+                    "wav",
+                    "midi",
+                    "wbmp",
+                    "wml",
+                    "wmlc",
+                    "wmls",
+                    "wmlsc",
+                    "xsd",
+                    "zip",
+                    "pict",
+                    "tif",
+                    "tiff",
+                    "mid",
+                    "jxr",
+                    "jar"
+                  ]
+                }
+              }
+            ],
+            "criteriaMustSatisfy": "any",
+            "comments": "Override the default caching behavior for other static objects."
+          },
+          {
+            "name": "HTML pages",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "caching",
+                "options": {
+                  "behavior": "CACHE_CONTROL_AND_EXPIRES",
+                  "cacheControlDirectives": "",
+                  "defaultTtl": "0s",
+                  "enhancedRfcSupport": false,
+                  "honorMustRevalidate": false,
+                  "honorPrivate": false,
+                  "mustRevalidate": false
+                }
+              },
+              {
+                "name": "cacheKeyQueryParams",
+                "options": {
+                  "behavior": "IGNORE",
+                  "exactMatch": true,
+                  "parameters": [
+                    "gclid",
+                    "fbclid",
+                    "utm_source",
+                    "utm_campaign",
+                    "utm_medium",
+                    "utm_content"
+                  ]
+                }
+              }
+            ],
+            "criteria": [
+              {
+                "name": "fileExtension",
+                "options": {
+                  "matchCaseSensitive": false,
+                  "matchOperator": "IS_ONE_OF",
+                  "values": [
+                    "html",
+                    "htm",
+                    "php",
+                    "jsp",
+                    "aspx",
+                    "EMPTY_STRING"
+                  ]
+                }
+              }
+            ],
+            "criteriaMustSatisfy": "all",
+            "comments": "Override the default caching behavior for HTML pages cached on edge servers."
+          },
+          {
+            "name": "Redirects",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "cacheRedirect",
+                "options": {
+                  "enabled": "true"
+                }
+              }
+            ],
+            "criteria": [],
+            "criteriaMustSatisfy": "all",
+            "comments": "Configure caching for HTTP redirects. The redirect is cached for the same TTL as a 200 response when this feature is enabled"
+          },
+          {
+            "name": "Uncacheable objects",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "downstreamCache",
+                "options": {
+                  "behavior": "BUST"
+                }
+              }
+            ],
+            "criteria": [
+              {
+                "name": "cacheability",
+                "options": {
+                  "matchOperator": "IS_NOT",
+                  "value": "CACHEABLE"
+                }
+              }
+            ],
+            "criteriaMustSatisfy": "all",
+            "comments": "Configure the default client caching behavior for uncacheable content at the edge."
+          }
+        ],
+        "behaviors": [
+          {
+            "name": "caching",
+            "options": {
+              "behavior": "CACHE_CONTROL_AND_EXPIRES",
+              "cacheControlDirectives": "",
+              "defaultTtl": "0s",
+              "enhancedRfcSupport": false,
+              "honorMustRevalidate": false,
+              "honorPrivate": false,
+              "mustRevalidate": false
+            }
+          },
+          {
+            "name": "validateEntityTag",
+            "options": {
+              "enabled": false
+            }
+          },
+          {
+            "name": "removeVary",
+            "options": {
+              "enabled": false
+            }
+          },
+          {
+            "name": "cacheError",
+            "options": {
+              "enabled": true,
+              "preserveStale": true,
+              "ttl": "10s"
+            }
+          },
+          {
+            "name": "cacheKeyQueryParams",
+            "options": {
+              "behavior": "INCLUDE_ALL_ALPHABETIZE_ORDER"
+            }
+          },
+          {
+            "name": "prefreshCache",
+            "options": {
+              "enabled": true,
+              "prefreshval": 90
+            }
+          },
+          {
+            "name": "downstreamCache",
+            "options": {
+              "allowBehavior": "LESSER",
+              "behavior": "ALLOW",
+              "sendHeaders": "CACHE_CONTROL",
+              "sendPrivate": false
+            }
+          }
+        ],
+        "criteria": [],
+        "criteriaMustSatisfy": "all",
+        "comments": "Control the settings related to caching content at the edge and in the browser. As a result, fewer requests go to your origin, fewer bytes leave your data centers, and your assets are closer to your users."
+      },
+      {
+        "name": "Strengthen security",
+        "children": [
+          {
+            "name": "Allowed methods",
+            "children": [
+              {
+                "name": "POST",
+                "children": [],
+                "behaviors": [
+                  {
+                    "name": "allowPost",
+                    "options": {
+                      "allowWithoutContentLength": false,
+                      "enabled": true
+                    }
+                  }
+                ],
+                "criteria": [],
+                "criteriaMustSatisfy": "all",
+                "comments": "Allow use of the POST HTTP request method."
+              },
+              {
+                "name": "OPTIONS",
+                "children": [],
+                "behaviors": [
+                  {
+                    "name": "allowOptions",
+                    "options": {
+                      "enabled": true
+                    }
+                  }
+                ],
+                "criteria": [],
+                "criteriaMustSatisfy": "all",
+                "comments": "Allow use of the OPTIONS HTTP request method."
+              },
+              {
+                "name": "PUT",
+                "children": [],
+                "behaviors": [
+                  {
+                    "name": "allowPut",
+                    "options": {
+                      "enabled": true
+                    }
+                  }
+                ],
+                "criteria": [],
+                "criteriaMustSatisfy": "all",
+                "comments": "Allow use of the PUT HTTP request method."
+              },
+              {
+                "name": "DELETE",
+                "children": [],
+                "behaviors": [
+                  {
+                    "name": "allowDelete",
+                    "options": {
+                      "allowBody": false,
+                      "enabled": true
+                    }
+                  }
+                ],
+                "criteria": [],
+                "criteriaMustSatisfy": "all",
+                "comments": "Allow use of the DELETE HTTP request method."
+              },
+              {
+                "name": "PATCH",
+                "children": [],
+                "behaviors": [
+                  {
+                    "name": "allowPatch",
+                    "options": {
+                      "enabled": true
+                    }
+                  }
+                ],
+                "criteria": [],
+                "criteriaMustSatisfy": "all",
+                "comments": "Allow use of the PATCH HTTP request method."
+              }
+            ],
+            "behaviors": [
+              {
+                "name": "allHttpInCacheHierarchy",
+                "options": {
+                  "enabled": true
+                }
+              }
+            ],
+            "criteria": [],
+            "criteriaMustSatisfy": "all",
+            "comments": "Allow the use of HTTP methods. Consider enabling additional methods under a path match for increased origin security."
+          },
+          {
+            "name": "HSTS",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "httpStrictTransportSecurity",
+                "options": {
+                  "enable": true,
+                  "includeSubDomains": false,
+                  "maxAge": "ONE_DAY",
+                  "preload": false,
+                  "redirect": true,
+                  "redirectStatusCode": 301
+                }
+              }
+            ],
+            "criteria": [],
+            "criteriaMustSatisfy": "all",
+            "comments": "Require all browsers to connect to your site using HTTPS."
+          },
+          {
+            "name": "SiteShield",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "siteShield",
+                "options": {
+                  "ssmap": {
+                    "hasMixedHosts": false,
+                    "name": "PostNL-Stable (s3633.akamaiedge.net)",
+                    "src": "FALLBACK",
+                    "srmap": "PostNL-Group-IT-e14735.akasrg.akamai.com",
+                    "value": "s3633.akamaiedge.net"
+                  }
+                }
+              }
+            ],
+            "criteria": [],
+            "criteriaMustSatisfy": "all"
+          }
+        ],
+        "behaviors": [],
+        "criteria": [],
+        "criteriaMustSatisfy": "all",
+        "comments": "Control the settings that minimize the information your website shares with clients and malicious entities to reduce your exposure to threats."
+      },
+      {
+        "name": "Increase availability",
+        "children": [
+          {
+            "name": "Origin health",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "healthDetection",
+                "options": {
+                  "maximumReconnects": 3,
+                  "retryCount": 3,
+                  "retryInterval": "10s"
+                }
+              }
+            ],
+            "criteria": [],
+            "criteriaMustSatisfy": "all",
+            "comments": "Monitor the health of your origin by tracking unsuccessful IP connection attempts."
+          }
+        ],
+        "behaviors": [],
+        "criteria": [],
+        "criteriaMustSatisfy": "all",
+        "comments": "Control how to respond when your origin or third parties are slow or even down to minimize the negative impact on user experience."
+      },
+      {
+        "name": "Minimize payload",
+        "children": [
+          {
+            "name": "Compressible objects",
+            "children": [],
+            "behaviors": [
+              {
+                "name": "gzipResponse",
+                "options": {
+                  "behavior": "ALWAYS"
+                }
+              }
+            ],
+            "criteria": [
+              {
+                "name": "contentType",
+                "options": {
+                  "matchCaseSensitive": false,
+                  "matchOperator": "IS_ONE_OF",
+                  "matchWildcard": true,
+                  "values": [
+                    "application/*javascript*",
+                    "application/*json*",
+                    "application/*xml*",
+                    "application/text*",
+                    "application/vnd-ms-fontobject",
+                    "application/vnd.microsoft.icon",
+                    "application/x-font-opentype",
+                    "application/x-font-truetype",
+                    "application/x-font-ttf",
+                    "application/xmlfont/eot",
+                    "font/eot",
+                    "font/opentype",
+                    "font/otf",
+                    "image/svg+xml",
+                    "image/vnd.microsoft.icon",
+                    "image/x-icon",
+                    "text/*",
+                    "application/octet-stream*",
+                    "application/x-font-eot*",
+                    "font/ttf",
+                    "application/font-ttf",
+                    "application/font-sfnt",
+                    "application/x-tgif"
+                  ]
+                }
+              }
+            ],
+            "criteriaMustSatisfy": "all",
+            "comments": "Serve gzip compressed content for text-based formats."
+          }
+        ],
+        "behaviors": [],
+        "criteria": [],
+        "criteriaMustSatisfy": "all",
+        "comments": "Control the settings that reduce the size of the delivered content and decrease the number of bytes sent by your properties. This allows you to cut down the network overhead of your website or API."
+      }
+    ],
+    "behaviors": [
+      {
+        "name": "origin",
+        "options": {
+          "cacheKeyHostname": "REQUEST_HOST_HEADER",
+          "compress": true,
+          "customValidCnValues": [
+            "{{Origin Hostname}}",
+            "{{Forward Host Header}}"
+          ],
+          "enableTrueClientIp": true,
+          "forwardHostHeader": "REQUEST_HOST_HEADER",
+          "hostname": "put-your-origin.here.com",
+          "httpPort": 80,
+          "httpsPort": 443,
+          "ipVersion": "IPV4",
+          "minTlsVersion": "DYNAMIC",
+          "originCertificate": "",
+          "originCertsToHonor": "STANDARD_CERTIFICATE_AUTHORITIES",
+          "originSni": true,
+          "originType": "CUSTOMER",
+          "ports": "",
+          "tlsVersionTitle": "",
+          "trueClientIpClientSetting": false,
+          "trueClientIpHeader": "True-Client-IP",
+          "verificationMode": "CUSTOM",
+          "standardCertificateAuthorities": [
+            "akamai-permissive",
+            "THIRD_PARTY_AMAZON"
+          ]
+        }
+      }
+    ],
+    "options": {
+      "is_secure": true
+    },
+    "comments": "The Default Rule template contains all the necessary and recommended features. Rules are evaluated from top to bottom and the last matching rule wins."
+  }
+}
+)}

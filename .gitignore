@@ -1,0 +1,27 @@
+# Local .terraform directories
+.terraform/
+
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+
+# Ignore override files as they are usually local-only
+*.tfvars
+*.tfvars.json
+
+# Ignore sensitive files
+*.auto.tfvars
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
+
+# local credential file, not needed in repo
+provider.tf
+
+.vscode/
+.terraform.lock.hcl
+snippets-logs.log
