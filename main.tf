@@ -52,12 +52,13 @@ resource "akamai_property" "aka_property" {
   product_id  = resource.akamai_cp_code.cp_code.product_id
   rule_format = "latest"
 
-  # A dynamic block of hostnames.
+  # A dynamic block of hostnames. This version will use pre-created edge hostnames
+  # If you want to create edge_hostnames dynamically, use ${hostnames.key}.${var.domain_suffix}"
   dynamic "hostnames" {
     for_each = toset(local.hostnames)
     content {
-      cname_from             = hostnames.key
-      cname_to               = "${hostnames.key}.${var.domain_suffix}"
+      cname_from             = local.hostnames.key
+      cname_to               = var.edge_hostname
       cert_provisioning_type = "DEFAULT"
     }
   }

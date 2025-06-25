@@ -77,6 +77,18 @@ variable "hostnames" {
   }
 }
 
+variable "edge_hostname" {
+  description = "The pre-configured Akamai edge hostname to use for the property. This Akamai edge hostname must exist, not going to create it here in this module."
+  type        = string
+  default     = "ew.grinwis.com.edgekey.net"
+
+  # validation to ensure the edge hostname is valid so ends with var.domain_suffix
+  validation {
+    condition     = can(regex("${var.domain_prefix}$", var.edge_hostname))
+    error_message = "The edge hostname must end with '${var.domain_prefix}'."
+  }
+}
+
 # not setting a default, that should be done in the no code module to it can be easy switched in the UI if needed.
 variable "security_policy" {
   description = "The security policy to use for the property"
