@@ -15,8 +15,11 @@ locals {
   hostnames = [for item in local.raw_list : trimspace(item)]
 
   # dynamically create property name and cpcode from the first hostname entry in the list
-  hostname_parts = regex("^(.+)\\.([a-zA-Z]\\d{2})\\.(.+)$", local.hostnames[0])
+  hostname_parts = regex("^(.+)\\.[a-zA-Z](\\d{2})\\.(.+)$", local.hostnames[0])
   property_name  = format("%s.%s.%s", local.hostname_parts[0], local.hostname_parts[1], local.hostname_parts[2])
+
+  # cpcode is the same as property name
+  cpcode = local.property_name
 
   # using ION as our default product in case wrong product type has been provided as input var.
   default_product = "prd_Fresca"
