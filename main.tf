@@ -57,7 +57,7 @@ resource "akamai_property" "aka_property" {
   dynamic "hostnames" {
     for_each = toset(local.hostnames)
     content {
-      cname_from             = local.hostnames.key
+      cname_from             = hostnames.key
       cname_to               = var.edge_hostname
       cert_provisioning_type = "DEFAULT"
     }

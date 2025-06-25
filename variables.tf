@@ -84,8 +84,8 @@ variable "edge_hostname" {
 
   # validation to ensure the edge hostname is valid so ends with var.domain_suffix
   validation {
-    condition     = can(regex("${var.domain_prefix}$", var.edge_hostname))
-    error_message = "The edge hostname must end with '${var.domain_prefix}'."
+    condition     = can(regex("${var.domain_suffix}$", var.edge_hostname))
+    error_message = "The edge hostname must end with '${var.domain_suffix}'."
   }
 }
 
