@@ -44,7 +44,7 @@ resource "akamai_cp_code" "cp_code" {
 }
 
 # as the config will be pretty static, use template file
-# we're going to use all required rules in this tf file.
+# we're going to use all required rules in this tf file and secure by default (SBD) certificates.
 resource "akamai_property" "aka_property" {
   name        = local.property_name
   contract_id = data.akamai_contract.contract.id
@@ -52,8 +52,9 @@ resource "akamai_property" "aka_property" {
   product_id  = resource.akamai_cp_code.cp_code.product_id
   rule_format = "latest"
 
-  # A dynamic block of hostnames. This version will use pre-created edge hostnames
-  # If you want to create edge_hostnames dynamically, use ${hostnames.key}.${var.domain_suffix}"
+  # A dynamic block of hostnames for this property. This version will use a pre-created edge hostname.
+  # If you want to create SBD edge hostnames dynamically per hostname, use ${hostnames.key}.${var.domain_suffix}"
+  # and if you want to create a single edge hostname, use the akamai_edge_hostname resource.
   dynamic "hostnames" {
     for_each = toset(local.hostnames)
     content {
