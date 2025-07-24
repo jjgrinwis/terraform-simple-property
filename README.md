@@ -19,7 +19,7 @@ This configuration creates:
 - **Automatic Certificate Management**: Handles SSL certificate provisioning with domain validation
 - **DNS Integration**: Creates necessary DNS records for certificate validation and email security
 - **Security Policy Configuration**: Configurable security levels (low, medium, high)
-- **Network Selection**: Supports both Enhanced Secure (edgekey.net) and Fast Forward (edgesuite.net) networks
+- **Network Selection**: Supports both Enhanced Secure (edgekey.net) and FreeFlow (edgesuite.net) networks
 
 ## Prerequisites
 
@@ -27,7 +27,7 @@ This configuration creates:
 
    - Install Akamai CLI
    - Configure edgerc file at `~/.edgerc` with the correct section
-   - Ensure you have appropriate permissions for Property Manager and EdgeDNS
+   - Ensure you have appropriate permissions for Property Manager(PAPI) and EdgeDNS
 
 2. **Terraform**:
    - Terraform >= 0.14
@@ -41,9 +41,9 @@ This configuration creates:
 ├── provider.tf       # Akamai provider configuration
 ├── variables.tf      # Input variable definitions
 ├── outputs.tf        # Output values
-├── dns.tf           # DNS record management
-├── terraform.tfvars # Variable values (customize this)
-└── template/        # Property rule templates (referenced but not included)
+├── dns.tf            # DNS record management
+├── terraform.tfvars  # Variable values (customize this)
+└── template/         # Property rule templates (referenced but not included)
     └── rules.tftpl   # Property rules template
 ```
 
@@ -51,7 +51,9 @@ This configuration creates:
 
 ### Required Variables
 
-Copy and customize the `terraform.tfvars` file:
+All defined variables have a default value. They can be overwritten using the local terraform.tfvars file or set variables in TF cloud.
+
+Copy and customize the `terraform.tfvars` file if you want to use other
 
 ```hcl
 # Akamai group name
@@ -74,6 +76,9 @@ security_policy = "medium"
 
 # Product type
 product_name = "dsa"
+
+# Edge Hostname
+edge_hostname = "my.edge.hostname.edgekey.net"
 ```
 
 ## Usage
