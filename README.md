@@ -7,8 +7,9 @@ This Terraform configuration manages Akamai CDN properties with integrated DNS m
 This configuration creates:
 
 - Akamai delivery property with dynamic hostname support
+- Uses an existing Akamai edgehostname, there is no need to create Akamai edgehostnames over and over again.
 - CP Code management (reuses existing codes when possible)
-- Automatic SSL certificate provisioning
+- Automatic SSL certificate provisioning via the Secure By Default option (SBD).
 - DNS records including CNAME for SBD certificate approval, SPF, DMARC, and TLSRPT records
 - Support for multiple Akamai products (ION, DSA, Download Delivery)
 
@@ -25,9 +26,9 @@ This configuration creates:
 
 1. **Akamai CLI and Credentials**:
 
-   - Install Akamai CLI
+   - Install Akamai CLI (optional to get group name and check permissions)
    - Configure edgerc file at `~/.edgerc` with the correct section
-   - Ensure you have appropriate permissions for Property Manager(PAPI) and EdgeDNS
+   - Ensure you have appropriate permissions for Property Manager (PAPI) and EdgeDNS
 
 2. **Terraform**:
    - Terraform >= 0.14
@@ -44,14 +45,14 @@ This configuration creates:
 ├── dns.tf            # DNS record management
 ├── terraform.tfvars  # Variable values (customize this)
 └── template/         # Property rule templates (referenced but not included)
-    └── rules.tftpl   # Property rules template
+    └── rules.tftpl   # Property rules template with dynamic hostname section
 ```
 
 ## Configuration
 
 ### Required Variables
 
-All defined variables have a default value. They can be overwritten using the local terraform.tfvars file or set variables in TF cloud.
+All defined variables have a default value. They can be overwritten using the local [terraform.tfvars file or set ENV vars](https://developer.hashicorp.com/terraform/language/values/variables#environment-variables).
 
 Copy and customize the `terraform.tfvars` file if you want to use other
 
@@ -62,7 +63,7 @@ group_name = "Your-Akamai-Group-Name"
 # Email for notifications
 email = "your-email@domain.com"
 
-# Domain suffix (edgekey.net for Enhanced Secure, edgesuite.net for Fast Forward)
+# Domain suffix (edgekey.net for Enhanced Secure, edgesuite.net for FreeFlow)
 domain_suffix = "edgekey.net"
 
 # CP Code name (will reuse if exists)
@@ -136,21 +137,19 @@ The configuration automatically creates:
 
 4. **CP Code Reuse**: The configuration will reuse existing CP Codes with the same name to avoid duplicates.
 
-5. **Certificate Provisioning**: Uses Akamai's default certificate provisioning with domain validation.
+5. **Certificate Provisioning**: Uses Akamai's default certificate provisioning (SBD) with domain validation.
 
 ## Troubleshooting
 
 - **Permission Errors**: Verify EdgeRC credentials and API permissions
-- **DNS Validation Issues**: Ensure DNS zone exists and is manageable via EdgeDNS
+- **DNS Validation Issues**: Ensure DNS zone exists and is manageable via EdgeDNS. We're only managing records, not the zone itself.
 - **Template Errors**: Verify the `template/rules.tftpl` file exists and is properly formatted
 - **Hostname Validation**: Check that hostnames match the required pattern
 
 ## Security Considerations
 
-- Store EdgeRC credentials securely
-- Use appropriate security policy levels based on your requirements
-- Monitor certificate expiration and renewal
-- Regularly review DNS records for accuracy
+- Store EdgeRC credentials securely. They will rotate after a certain period of time, be aware of that.
+- Use appropriate security policy levels based on your requirements.
 
 ## Support
 
