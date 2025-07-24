@@ -93,7 +93,7 @@ variable "edge_hostname" {
 variable "security_policy" {
   description = "The security policy to use for the property"
   type        = string
-  #default     = "low"
+  default     = "low"
   validation {
     condition     = contains(["low", "medium", "high"], var.security_policy)
     error_message = "Security policy must be one of: low, medium, high."

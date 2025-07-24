@@ -15,8 +15,8 @@ locals {
   hostnames = [for item in local.raw_list : trimspace(item)]
 
   # dynamically create property name and cpcode from the first hostname entry in the list
-  hostname_parts = regex("^(.+)\\.[a-zA-Z](\\d{2})\\.(.+)$", local.hostnames[0])
-  property_name  = format("%s.%s.%s", local.hostname_parts[0], local.hostname_parts[1], local.hostname_parts[2])
+  # hostname_parts = regex("^(.+)\\.[a-zA-Z](\\d{2})\\.(.+)$", local.hostnames[0])
+  property_name = replace(split(".", local.hostnames[0])[1], "pnl-", "")
 
   # cpcode is the same as property name
   cpcode = local.property_name
