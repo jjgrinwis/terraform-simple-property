@@ -69,7 +69,7 @@ resource "akamai_property" "aka_property" {
 
   # rules created via akamai pm show-ruletree --section gss -a F-AC-1020908:1-5G3LB -p Externe_Plannings_Visualisatie | jq .rules > rules.json
   # json modified so it will dynamically create the different origins
-  rules = templatefile("template/rules.tftpl", { hostnames = local.hostnames, cpcode = tonumber(resource.akamai_cp_code.cp_code.id) })
+  rules = templatefile("${path.module}/template/rules.tftpl", { hostnames = local.hostnames, cpcode = tonumber(resource.akamai_cp_code.cp_code.id) })
 }
 
 
