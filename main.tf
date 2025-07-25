@@ -17,12 +17,13 @@ locals {
   # dynamically create property name and cpcode from the first hostname entry in the list
   # hostname_parts = regex("^(.+)\\.[a-zA-Z](\\d{2})\\.(.+)$", local.hostnames[0])
   property_name = replace(split(".", local.hostnames[0])[1], "pnl-", "")
+  zone_name     = regex("[^.]+\\.[^.]+$", local.hostnames[0])
 
   # cpcode is the same as property name
   cpcode = local.property_name
 
-  # using ION as our default product in case wrong product type has been provided as input var.
-  default_product = "prd_Fresca"
+  # using DSA as our default product in case wrong product type has been provided as input var.
+  default_product = "prd_Site_Accel"
 
   # convert the list of maps to a map of maps with entry.hostname as key of the map
   # this map of maps will be fed into our EdgeDNS module to create the CNAME records.
@@ -39,6 +40,7 @@ data "akamai_contract" "contract" {
 
 # for the demo don't create cpcode's over and over again, just reuse existing one
 # if cpcode already existst it will take the existing one. If selecting existing one, make sure it's unique.
+# we going into prod, change name from var.cpcode to local.cpcode
 resource "akamai_cp_code" "cp_code" {
   name        = var.cpcode
   contract_id = data.akamai_contract.contract.id
@@ -55,14 +57,15 @@ resource "akamai_property" "aka_property" {
   product_id  = resource.akamai_cp_code.cp_code.product_id
   rule_format = "latest"
 
-  # A dynamic block of hostnames for this property. This version will use a pre-created edge hostname.
+  # A dynamic block of hostnames for this property.
+  # This version will use one generic edge hostname for all hostnames in this property.
   # If you want to create SBD edge hostnames dynamically per hostname, use ${hostnames.key}.${var.domain_suffix}"
   # and if you want to create a single edge hostname, use the akamai_edge_hostname resource.
   dynamic "hostnames" {
     for_each = toset(local.hostnames)
     content {
       cname_from             = hostnames.key
-      cname_to               = var.edge_hostname
+      cname_to               = "${local.property_name}.${local.zone_name}.${var.domain_suffix}"
       cert_provisioning_type = "DEFAULT"
     }
   }

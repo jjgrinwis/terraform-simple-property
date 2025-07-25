@@ -30,8 +30,15 @@ ${jsonencode(
                   "tlsVersionTitle": "",
                   "trueClientIpClientSetting": false,
                   "trueClientIpHeader": "True-Client-IP",
-                  "verificationMode": "PLATFORM_SETTINGS",
-                  "customCertificates": []
+                  "verificationMode": "CUSTOM",
+                  "customValidCnValues": [
+                    "{{Origin Hostname}}",
+                    "{{Forward Host Header}}"
+                ],
+                  "originCertsToHonor": "STANDARD_CERTIFICATE_AUTHORITIES",
+                  "standardCertificateAuthorities": [
+                      "akamai-permissive"
+                  ]
                 }
               }
             ],
@@ -98,6 +105,13 @@ ${jsonencode(
             "criteria": [],
             "criteriaMustSatisfy": "all",
             "comments": "Specify the level of detail you want to be logged in your Log Delivery Service reports. Log User-Agent Header to obtain detailed information in the Traffic by Browser and OS report."
+          },
+          {
+            "name": "globalRequestNumber",
+            "options": {
+                "outputOption": "BOTH_HEADERS",
+                "headerName": "Akamai-GRN"
+            }
           }
         ],
         "behaviors": [],
@@ -145,6 +159,18 @@ ${jsonencode(
                 "name": "http2",
                 "options": {
                   "enabled": ""
+                }
+              },
+              {
+                "name": "http3",
+                "options": {
+                    "enable": true
+                }
+              },
+             {
+                "name": "earlyData",
+                "options": {
+                    "enabled": true
                 }
               },
               {
@@ -550,7 +576,16 @@ ${jsonencode(
                 "options": {
                   "enabled": "true"
                 }
+              },
+              {
+                "name": "chaseRedirects",
+                "options": {
+                    "enabled": true,
+                    "limit": "4",
+                    "serve404": true
+                }
               }
+
             ],
             "criteria": [],
             "criteriaMustSatisfy": "all",
@@ -746,7 +781,7 @@ ${jsonencode(
                   "enable": true,
                   "includeSubDomains": false,
                   "maxAge": "ONE_DAY",
-                  "preload": false,
+                  "preload": true,
                   "redirect": true,
                   "redirectStatusCode": 301
                 }

@@ -7,8 +7,8 @@ This Terraform configuration manages Akamai CDN properties with integrated DNS m
 This configuration creates:
 
 - Akamai delivery property with dynamic hostname support
-- Uses an existing Akamai edgehostname, there is no need to create Akamai edgehostnames over and over again.
-- CP Code management (reuses existing codes when possible)
+- Will create one unique Akamai edgehostname per property
+- Will create unique CP Code per property which will be the same as property name.
 - Automatic SSL certificate provisioning via the Secure By Default option (SBD).
 - DNS records including CNAME for SBD certificate approval, SPF, DMARC, and TLSRPT records
 - Support for multiple Akamai products (ION, DSA, Download Delivery)
@@ -19,7 +19,7 @@ This configuration creates:
 - **Flexible Product Support**: Supports ION, DSA, and Download Delivery products
 - **Automatic Certificate Management**: Handles SSL certificate provisioning with domain validation
 - **DNS Integration**: Creates necessary DNS records for certificate validation and email security
-- **Security Policy Configuration**: Configurable security levels (low, medium, high)
+- **Security Policy Configuration**: Configurable security levels (low, medium, high) (future use)
 - **Network Selection**: Supports both Enhanced Secure (edgekey.net) and FreeFlow (edgesuite.net) networks
 
 ## Prerequisites
@@ -135,7 +135,7 @@ The configuration automatically creates:
 
 3. **Hostname Format**: Hostnames must follow the pattern `hostname.subdomain.(p15|a15|r15|s15|t15).domain.tld`.
 
-4. **CP Code Reuse**: The configuration will reuse existing CP Codes with the same name to avoid duplicates.
+4. **CP Code**: The configuration will create one new CP Code per property.
 
 5. **Certificate Provisioning**: Uses Akamai's default certificate provisioning (SBD) with domain validation.
 
